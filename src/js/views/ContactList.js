@@ -1,0 +1,85 @@
+import React, { useContext, useEffect, useState } from "react";
+import "../../styles/home.css";
+import { FaLocationDot, FaPhone, FaEnvelope, FaPencil, FaTrash } from 'react-icons/fa6';
+import { Context } from "../store/appContext";
+import { Link, useNavigate } from "react-router-dom";
+
+const defaultImageUrl = "https://avatars.githubusercontent.com/u/103007270?v=4";
+
+export const ContactList = () => {
+	const { store, actions } = useContext(Context);
+	const navigate = useNavigate();
+	const [changed, setChanged] = useState(false);
+
+	useEffect(() => {
+		actions.fetchGetContact();
+	}, [changed]);
+
+	const handleDeleteContact = (id) => {
+		actions.fetchDeleteContact(id);
+		setChanged(prev => !prev);
+		navigate("/");
+	}
+
+	const handleEditContact = (name, phone, email, address, id) => {
+		actions.handleEditContact(true, id);
+		actions.selectedContact(name, phone, email, address);
+	}
+
+	return (
+		<div className="container">
+			<div className="card">
+				<div className="card-body mr-5">
+					{store.contacts?.map((contact) => (
+						<div className="d-flex flex-row" key={contact.id}>
+							<div>
+								<img src={defaultImageUrl} className="card-img rounded-circle" alt="contact picture" />
+							</div>
+							<ul className="list-group">
+								<li className="contactListName">
+									<h5 className="card-title mt-2">{contact.name}</h5>
+								</li>
+								<li className="contactList">
+									<p className="card-text mt-1"> <FaLocationDot /> {contact.address}</p>
+								</li>
+								<li className="contactList">
+									<p className="card-text mt-1"> <FaPhone />  {contact.phone}</p>
+								</li>
+								<li className="contactList">
+									<p className="card-text mt-1"> <FaEnvelope /> {contact.email}</p>
+								</li>
+							</ul>
+							<div className="float-right">
+								<Link to="/AddNewContact">
+									<button onClick={() => handleEditContact(contact.name, contact.phone, contact.email, contact.address, contact.id)} type="button" className="btn editPen">
+										<FaPencil />
+									</button>
+								</Link>
+								<button type="button" className="btn deleteTrash" data-bs-toggle="modal" data-bs-target="#exampleModal">
+									<FaTrash />
+								</button>
+							</div>
+							<div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+								<div className="modal-dialog">
+									<div className="modal-content">
+										<div className="modal-header">
+											<h5 className="display-4">Estas seguro?</h5>
+											<button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+										</div>
+										<div className="modal-body">
+											<p>Si borras el contacto no podras recuperarlo!</p>
+										</div>
+										<div className="modal-footer">
+											<button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Volver atras!</button>
+											<button onClick={() => handleDeleteContact(contact.id)} type="button" className="btn btn-primary" data-bs-dismiss="modal">Borrar!</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					))}
+				</div>
+			</div>
+		</div>
+	)
+};

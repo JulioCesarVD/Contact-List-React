@@ -1,0 +1,63 @@
+import React, { useState, useContext, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+import { Context } from "../store/appContext";
+
+export const AddNewContact = () => {
+	const { store, actions } = useContext(Context);
+	const [name, setName] = useState("");
+	const [phone, setPhone] = useState("");
+	const [address, setAddress] = useState("");
+	const [email, setEmail] = useState("");
+	const navigate = useNavigate();
+
+
+	const handleClick = () => {
+		if (store.editContact === false) {
+			actions.fetchPostContact(name, phone, email, address);
+			actions.fetchGetContact();
+			navigate("/"); // sirve como link para usar dentro de funciones y que te lleve a la página que quieras una vez se le llama
+		} else {
+			actions.fetchUpdateContact(name, phone, email, address);
+			actions.fetchGetContact();
+			navigate("/");
+		}
+
+	}
+
+	useEffect(() => {
+		if (store.selectedContact) {
+			setName(store.selectedContact.name || "")
+			setEmail(store.selectedContact.email || "")
+			setPhone(store.selectedContact.phone || "")
+			setAddress(store.selectedContact.address || "")
+
+		}
+		console.log(store.selectedContact)
+
+	}, [store.selectedContact]);
+
+	return (
+		<div className="container">
+			<h1 className="fw-bold text-center">{store.editContact ? "Edit contact" : "Add a new contact"}</h1>
+			<div className="mb-3">
+				<label className="form-label">Nombre completo </label>
+				<input type="text" className="form-control" placeholder="Escribe un nombre" value={name} onChange={(e) => setName(e.target.value)} />
+			</div>
+			<div className="mb-3">
+				<label className="form-label">E-mail</label>
+				<input type="email" className="form-control" placeholder="Escribe un correo" value={email} onChange={(e) => setEmail(e.target.value)} />
+			</div>
+			<div className="mb-3">
+				<label className="form-label">Movil</label>
+				<input type="number" className="form-control" placeholder="Escribe un numero de telefono" value={phone} onChange={(e) => setPhone(e.target.value)} />
+			</div>
+			<div className="mb-3">
+				<label className="form-label">Direccion</label>
+				<input type="text" className="form-control" placeholder="Escribe una direccion valida" value={address} onChange={(e) => setAddress(e.target.value)} />
+			</div>
+			<button onClick={handleClick} className="btn btn-primary w-100">{store.editContact ? "Save new changes" : "Save new contact"}</button>
+			<Link to="/">Volver atras.</Link>
+		</div>
+	);
+};
