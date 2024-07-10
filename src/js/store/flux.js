@@ -9,7 +9,7 @@ const getState = ({ getStore, setStore, getActions }) => {
 		},
 		actions: {
 			fetchPostAgenda: () => { //create agenda
-				fetch('https://playground.4geeks.com/contact/agendas/JulioCesarVd', {
+				fetch('https://playground.4geeks.com/contact/agendas/JulioCesarVD', {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json"
